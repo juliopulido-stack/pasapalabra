@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pasapalabra Pro: Virus Style</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Roboto:wght@400;700&display=swap');
+
+        :root {
+            --bg-dark: #070f1a;
+            --orange-glow: #ff7b00;
+            --blue-glow: #00aeff;
+            --btn-dark: #0f1d2e;
+            --text-white: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-dark);
+            color: var(--text-white);
+            font-family: 'Roboto', sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background-image: radial-gradient(circle at 50% 50%, #112240 0%, #050a12 100%);
+        }
+
+        .main-title {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 4rem;
+            line-height: 1;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px rgba(0, 174, 255, 0.5);
+        }
+        .title-top { color: white; display: block; }
+        .title-bottom { color: var(--orange-glow); display: block; text-shadow: 0 0 20px var(--orange-glow); }
+
+        .menu-container {
+            width: 90%;
+            max-width: 400px;
+            padding: 40px 20px;
+            border: 2px solid var(--orange-glow);
+            border-radius: 30px;
+            background: rgba(15, 29, 46, 0.6);
+            backdrop-filter: blur(5px);
+            box-shadow: 0 0 30px rgba(255, 123, 0, 0.2), inset 0 0 20px rgba(255, 123, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 18px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-family: 'Roboto', sans-serif;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+        }
+
+        .btn:active { transform: scale(0.98); }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--text-white);
+            color: var(--text-white);
+        }
+        .btn-outline:hover { box-shadow: 0 0 15px rgba(255, 255, 255, 0.3); }
+
+        .btn-orange {
+            background: linear-gradient(135deg, #ff7b00, #ff9d3d);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 123, 0, 0.4);
+        }
+        .btn-orange:hover { box-shadow: 0 6px 20px rgba(255, 123, 0, 0.6); }
+
+        .btn-blue {
+            background: linear-gradient(135deg, #00aeff, #0088cc);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 174, 255, 0.4);
+        }
+        .btn-blue:hover { box-shadow: 0 6px 20px rgba(0, 174, 255, 0.6); }
+
+        .footer-pill {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+
+        .hidden { display: none !important; }
+
+        #staff-overlay {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #ff0055, #ff4477);
+            border-radius: 20px;
+            font-weight: bold;
+            box-shadow: 0 0 20px rgba(255, 0, 85, 0.6);
+            display: none;
+            z-index: 999;
+        }
+
+        #user-input {
+            padding: 15px;
+            border-radius: 50px;
+            border: 2px solid var(--blue-glow);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            text-align: center;
+            font-size: 1rem;
+            outline: none;
+            display: none;
+        }
+
+        /* ROSCO */
+        .rosco-box {
+            position: relative;
+            width: 440px;
+            height: 440px;
+            margin: 0 auto 20px;
+        }
+
+        .letra {
+            position: absolute;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: #0f1d2e;
+            border: 2px solid #00aeff;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .letra.activa {
+            background: #ff7b00;
+            border-color: #ff7b00;
+            box-shadow: 0 0 20px #ff7b00;
+            transform: scale(1.3);
+        }
+
+        .letra.correcta {
+            background: #00ff00;
+            border-color: #00ff00;
+        }
+
+        .letra.fallada {
+            background: #ff0000;
+            border-color: #ff0000;
+        }
+    </style>
+</head>
+<body>
+    <div id="staff-overlay">👑 STAFF MODE</div>
+
+    <div id="menu-screen">
+        <div class="main-title">
+            <span class="title-top">PASAPALABRA</span>
+            <span class="title-bottom">PRO</span>
+        </div>
+
+        <div class="menu-container">
+            <button class="btn btn-outline" onclick="loginStaff()">
+                🔐 SUPERADMIN
+            </button>
+
+            <input type="text" id="user-input" placeholder="Tu nombre..." maxlength="20">
+
+            <button id="btn-play" class="btn btn-orange" onclick="prepararJuego()">
+                ▶ JUGAR
+            </button>
+
+            <button class="btn btn-blue" onclick="alert('Reglas: Responde a las definiciones de la A a la Z.\n\nPuedes usar el micrófono para responder.')">
+                📘 CÓMO JUGAR
+            </button>
+        </div>
+
+        <div class="footer-pill">
+            🤖 powered by @pablo
+        </div>
+    </div>
+
+    <div id="game-screen" class="hidden">
+        <div class="rosco-box" id="rosco"></div>
+        
+        <div class="menu-container" style="max-width: 500px; padding: 20px;">
+            <h2 id="letter-header" style="color:var(--orange-glow); margin:0; font-size:2rem;">CON LA A</h2>
+            <p id="question-text" style="color:#ddd; min-height:60px;">Cargando pregunta...</p>
+            
+            <input type="text" id="game-answer" class="btn btn-outline" style="text-align:center; margin-bottom:10px; cursor:text;" placeholder="Escribe o habla...">
+            
+            <div id="mic-status"></div>
+
+            <button class="btn btn-blue" onclick="activarVoz()">🎤 USAR MICRO</button>
+            
+            <div style="display:flex; gap:10px; width:100%; margin-top:10px;">
+                <button class="btn btn-orange" onclick="checkAnswer()">ENVIAR</button>
+                <button class="btn btn-outline" style="border-color:#e74c3c; color:#e74c3c;" onclick="pasapalabra()">PASAR</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURACIÓN & DATOS (27 LETRAS COMPLETAS) ---
+        const DB = [
+            {l:"A", q:"Vehículo con alas que vuela por el aire.", r:"avion"},
+            {l:"B", q:"Mamífero marino de gran tamaño.", r:"ballena"},
+            {l:"C", q:"Edificio donde vive una familia.", r:"casa"},
+            {l:"D", q:"Pieza cúbica con puntos para jugar.", r:"dado"},
+            {l:"E", q:"Animal con trompa y orejas grandes.", r:"elefante"},
+            {l:"F", q:"Torre con luz para guiar barcos.", r:"faro"},
+            {l:"G", q:"Animal que maúlla y caza ratones.", r:"gato"},
+            {l:"H", q:"Agua congelada.", r:"hielo"},
+            {l:"I", q:"Tierra rodeada de agua.", r:"isla"},
+            {l:"J", q:"Animal con el cuello muy largo.", r:"jirafa"},
+            {l:"K", q:"Arte marcial japonés con kimono.", r:"karate"},
+            {l:"L", q:"Satélite de la Tierra que brilla de noche.", r:"luna"},
+            {l:"M", q:"Fruto del manzano.", r:"manzana"},
+            {l:"N", q:"Fruta con mucha vitamina C.", r:"naranja"},
+            {l:"Ñ", q:"Mamífero de Sudamérica parecido a la llama.", r:"ñandu"},
+            {l:"O", q:"Órgano para escuchar.", r:"oreja"},
+            {l:"P", q:"Animal amigo del hombre que ladra.", r:"perro"},
+            {l:"Q", q:"Alimento hecho de leche.", r:"queso"},
+            {l:"R", q:"Aparato para ver la hora.", r:"reloj"},
+            {l:"S", q:"Estrella que nos da luz y calor.", r:"sol"},
+            {l:"T", q:"Vehículo sobre raíles.", r:"tren"},
+            {l:"U", q:"Fruta que crece en racimos.", r:"uva"},
+            {l:"V", q:"Estación de más calor.", r:"verano"},
+            {l:"W", q:"Red mundial de información e internet.", r:"web"},
+            {l:"X", q:"Prueba escolar para evaluar.", r:"examen"},
+            {l:"Y", q:"Barco de recreo grande.", r:"yate"},
+            {l:"Z", q:"Calzado para el pie.", r:"zapato"}
+        ];
+        
+        let index = 0;
+        let score = 0;
+        let isStaff = false;
+        const synth = window.speechSynthesis;
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const rec = new SpeechRecognition();
+        rec.lang = 'es-ES';
+
+        // --- LÓGICA DEL MENÚ ---
+
+        function loginStaff() {
+            const pass = prompt("INTRODUCE CÓDIGO STAFF:");
+            if(pass === "Pablo23sek") {
+                isStaff = true;
+                document.getElementById('staff-overlay').style.display = "block";
+                alert("ACCESO CONCEDIDO: MODO SUPERADMIN");
+                document.getElementById('user-input').value = "PABLO";
+                document.getElementById('user-input').style.display = "block";
+                document.getElementById('btn-play').innerText = "👑 ENTRAR COMO STAFF";
+            } else {
+                alert("CONTRASEÑA INCORRECTA");
+            }
+        }
+
+        function prepararJuego() {
+            const input = document.getElementById('user-input');
+            if(input.style.display !== "block") {
+                input.style.display = "block";
+                document.getElementById('btn-play').innerText = "ACCEDER";
+                return;
+            }
+            
+            if(input.value.trim() === "") {
+                alert("Por favor, pon tu nombre.");
+                return;
+            }
+
+            startGame();
+        }
+
+        // --- LÓGICA DEL JUEGO ---
+
+        function startGame() {
+            document.getElementById('menu-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            renderRosco();
+            loadQuestion();
+        }
+
+        function renderRosco() {
+            const box = document.getElementById('rosco');
+            box.innerHTML = "";
+            const radius = 180;
+            const total = DB.length;
+            
+            DB.forEach((item, i) => {
+                const el = document.createElement('div');
+                el.className = "letra";
+                el.id = "L-" + i;
+                el.innerText = item.l;
+                
+                const angle = (i * (360 / total) - 90) * (Math.PI / 180);
+                const x = Math.cos(angle) * radius + 200 - 17;
+                const y = Math.sin(angle) * radius + 200 - 17;
+                
+                el.style.left = x + "px";
+                el.style.top = y + "px";
+                box.appendChild(el);
+            });
+        }
+
+        function speak(text) {
+            synth.cancel();
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = 'es-ES';
+            synth.speak(u);
+        }
+
+        function loadQuestion() {
+            if(index >= DB.length) {
+                speak("Juego terminado. Puntuación: " + score);
+                alert("FIN DEL JUEGO. ACIERTOS: " + score);
+                location.reload();
+                return;
+            }
+
+            const data = DB[index];
+            document.getElementById('letter-header').innerText = "CON LA " + data.l;
+            document.getElementById('question-text').innerText = data.q;
+            document.getElementById('game-answer').value = "";
+            
+            document.querySelectorAll('.letra').forEach(l => l.classList.remove('activa'));
+            const currentLetra = document.getElementById("L-" + index);
+            if(currentLetra) currentLetra.classList.add('activa');
+
+            speak(data.q);
+        }
+
+        function checkAnswer() {
+            const userAns = document.getElementById('game-answer').value.toLowerCase().trim();
+            const correctAns = DB[index].r.toLowerCase();
+            const el = document.getElementById("L-" + index);
+
+            if(userAns === correctAns) {
+                el.classList.add('correcta');
+                speak("Correcto");
+                score++;
+            } else {
+                el.classList.add('fallada');
+                speak("Incorrecto, era " + correctAns);
+            }
+            index++;
+            setTimeout(loadQuestion, 1500);
+        }
+
+        function pasapalabra() {
+            speak("Pasapalabra");
+            index++;
+            loadQuestion();
+        }
+
+        // --- SISTEMA DE VOZ ---
+        function activarVoz() {
+            document.getElementById('mic-status').innerText = "🔴 ESCUCHANDO...";
+            rec.start();
+        }
+
+        rec.onresult = (event) => {
+            const voz = event.results[0][0].transcript;
+            document.getElementById('game-answer').value = voz;
+            document.getElementById('mic-status').innerText = "";
+        };
+        
+        rec.onerror = () => {
+            document.getElementById('mic-status').innerText = "❌ Error micro";
+        };
+
+    </script>
+</body>
+</html>

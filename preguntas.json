@@ -1,0 +1,146 @@
+[
+  {
+    "letra": "A",
+    "pregunta": "Vehículo con alas que vuela por el aire.",
+    "respuesta": "avion",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "B",
+    "pregunta": "Mamífero marino de gran tamaño.",
+    "respuesta": "ballena",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "C",
+    "pregunta": "Edificio donde vive una familia.",
+    "respuesta": "casa",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "D",
+    "pregunta": "Pieza cúbica con puntos para jugar.",
+    "respuesta": "dado",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "E",
+    "pregunta": "Animal con trompa y orejas grandes.",
+    "respuesta": "elefante",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "F",
+    "pregunta": "Torre con luz para guiar barcos.",
+    "respuesta": "faro",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "G",
+    "pregunta": "Animal que maúlla y caza ratones.",
+    "respuesta": "gato",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "H",
+    "pregunta": "Agua congelada.",
+    "respuesta": "hielo",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "I",
+    "pregunta": "Tierra rodeada de agua.",
+    "respuesta": "isla",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "J",
+    "pregunta": "Animal con el cuello muy largo.",
+    "respuesta": "jirafa",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "L",
+    "pregunta": "Satélite de la Tierra que brilla de noche.",
+    "respuesta": "luna",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "M",
+    "pregunta": "Fruto del manzano.",
+    "respuesta": "manzana",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "N",
+    "pregunta": "Fruta con mucha vitamina C.",
+    "respuesta": "naranja",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "O",
+    "pregunta": "Órgano para escuchar.",
+    "respuesta": "oreja",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "P",
+    "pregunta": "Animal amigo del hombre que ladra.",
+    "respuesta": "perro",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "Q",
+    "pregunta": "Alimento hecho de leche.",
+    "respuesta": "queso",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "R",
+    "pregunta": "Aparato para ver la hora.",
+    "respuesta": "reloj",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "S",
+    "pregunta": "Estrella que nos da luz y calor.",
+    "respuesta": "sol",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "T",
+    "pregunta": "Vehículo sobre raíles.",
+    "respuesta": "tren",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "U",
+    "pregunta": "Fruta que crece en racimos.",
+    "respuesta": "uva",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "V",
+    "pregunta": "Estación de más calor.",
+    "respuesta": "verano",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "X",
+    "pregunta": "Prueba escolar para evaluar.",
+    "respuesta": "examen",
+    "tipo": "CONTIENE LA"
+  },
+  {
+    "letra": "Y",
+    "pregunta": "Barco de recreo grande.",
+    "respuesta": "yate",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "Z",
+    "pregunta": "Calzado para el pie.",
+    "respuesta": "zapato",
+    "tipo": "CON LA"
+  }
+]
