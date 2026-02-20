@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pasapalabra</title>
+    <meta name="description" content="El famoso juego del Pasapalabra. Responde a las 27 letras del rosco antes de que se acabe el tiempo.">
+    <link rel="manifest" href="manifest.json">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0d14;
+            --surface: rgba(255,255,255,0.04);
+            --border: rgba(255,255,255,0.08);
+            --orange: #ff7f00;
+            --orange-glow: rgba(255,127,0,0.35);
+            --blue: #00b4ff;
+            --blue-glow: rgba(0,180,255,0.35);
+            --green: #00e676;
+            --red: #ff1744;
+            --pending: #ffd740;
+            --text: #f0f0f0;
+            --muted: #8a8fa8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            background-image:
+                radial-gradient(ellipse 80% 50% at 20% -10%, rgba(255,127,0,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse 80% 50% at 80% 110%, rgba(0,180,255,0.12) 0%, transparent 60%);
+        }
+
+        /* ─── PANTALLAS ─── */
+        .screen { display: none; flex-direction: column; align-items: center; justify-content: center; width: 100%; min-height: 100vh; padding: 20px; }
+        .screen.active { display: flex; }
+
+        /* ─── PANTALLA INICIO ─── */
+        #screen-menu {
+            gap: 32px;
+        }
+
+        .logo {
+            text-align: center;
+            line-height: 1;
+        }
+        .logo-main {
+            font-size: clamp(3rem, 10vw, 5.5rem);
+            font-weight: 900;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #fff 30%, var(--orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: none;
+            display: block;
+        }
+        .logo-sub {
+            font-size: clamp(0.85rem, 2vw, 1rem);
+            font-weight: 600;
+            letter-spacing: 6px;
+            color: var(--orange);
+            text-transform: uppercase;
+            display: block;
+            margin-top: 6px;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 36px 32px;
+            width: 100%;
+            max-width: 420px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 48px rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .input-label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--muted);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 14px 20px;
+            border-radius: 50px;
+            border: 1.5px solid var(--border);
+            background: rgba(255,255,255,0.05);
+            color: var(--text);
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        input[type="text"]:focus {
+            border-color: var(--orange);
+            box-shadow: 0 0 0 3px var(--orange-glow);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px 24px;
+            border-radius: 50px;
+            border: none;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+            letter-spacing: 0.5px;
+        }
+        .btn:active { transform: scale(0.97); }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--orange), #ffa040);
+            color: #fff;
+            box-shadow: 0 4px 20px var(--orange-glow);
+        }
+        .btn-primary:hover:not(:disabled) { box-shadow: 0 6px 28px var(--orange-glow); transform: translateY(-1px); }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.06);
+            border: 1.5px solid var(--border);
+            color: var(--muted);
+        }
+        .btn-secondary:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+
+        .divider {
+            height: 1px;
+            background: var(--border);
+            width: 100%;
+        }
+
+        /* ─── PANTALLA CARGA ─── */
+        #screen-loading { gap: 24px; text-align: center; }
+        .spinner {
+            width: 60px; height: 60px;
+            border: 4px solid rgba(255,127,0,0.15);
+            border-top-color: var(--orange);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-text { font-size: 1.1rem; color: var(--muted); }
+        .loading-name { font-size: 1.8rem; font-weight: 700; color: var(--orange); margin-top: 4px; }
+
+        /* ─── PANTALLA JUEGO ─── */
+        #screen-game {
+            gap: 0;
+            justify-content: flex-start;
+            padding: 16px 16px 20px;
+        }
+
+        /* Header del juego */
+        .game-header {
+            width: 100%;
+            max-width: 820px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        .player-name-badge {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--muted);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            padding: 6px 14px;
+        }
+        .player-name-badge span { color: var(--orange); }
+
+        /* Timer */
+        .timer-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+        .timer-display {
+            font-size: clamp(1.8rem, 5vw, 2.4rem);
+            font-weight: 900;
+            color: var(--text);
+            transition: color 0.3s;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 2px;
+        }
+        .timer-display.warning { color: var(--pending); }
+        .timer-display.danger { color: var(--red); animation: pulse 0.5s ease infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+        .timer-bar-track {
+            width: 160px;
+            height: 6px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .timer-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            background: linear-gradient(90deg, var(--green), var(--orange));
+            transition: width 1s linear, background 0.5s;
+        }
+        .timer-bar-fill.warning { background: var(--pending); }
+        .timer-bar-fill.danger { background: var(--red); }
+
+        /* Marcadores */
+        .scoreboard {
+            display: flex;
+            gap: 0;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            overflow: hidden;
+        }
+        .score-item {
+            padding: 6px 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+        .score-item + .score-item { border-left: 1px solid var(--border); }
+        .score-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .score-dot.green { background: var(--green); }
+        .score-dot.red { background: var(--red); }
+        .score-dot.yellow { background: var(--pending); }
+
+        /* Layout principal del juego */
+        .game-main {
+            width: 100%;
+            max-width: 820px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        /* Rosco */
+        .rosco-wrapper {
+            position: relative;
+            width: min(420px, 90vw);
+            height: min(420px, 90vw);
+            flex-shrink: 0;
+        }
+        #rosco-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Leyenda del centro del rosco */
+        .rosco-center {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            pointer-events: none;
+        }
+        .rosco-center .vuelta-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--muted);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .rosco-center .vuelta-num {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--orange);
+        }
+
+        /* Panel de pregunta */
+        .question-panel {
+            width: 100%;
+            max-width: 560px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .question-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 20px 24px;
+            min-height: 90px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .question-tag {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--orange);
+        }
+        .question-text {
+            font-size: clamp(0.95rem, 2.4vw, 1.08rem);
+            line-height: 1.5;
+            color: var(--text);
+        }
+
+        .answer-row {
+            display: flex;
+            gap: 10px;
+        }
+        #game-input {
+            flex: 1;
+            border-radius: 50px;
+            padding: 14px 20px;
+            border: 1.5px solid var(--border);
+            background: rgba(255,255,255,0.05);
+            color: var(--text);
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        #game-input:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px var(--blue-glow);
+        }
+        #game-input.correct {
+            border-color: var(--green);
+            background: rgba(0,230,118,0.07);
+        }
+        #game-input.wrong {
+            border-color: var(--red);
+            background: rgba(255,23,68,0.07);
+        }
+
+        .answer-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .btn-enviar {
+            flex: 1;
+            padding: 14px;
+            border-radius: 50px;
+            border: none;
+            background: linear-gradient(135deg, var(--orange), #ffa040);
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+            box-shadow: 0 4px 16px var(--orange-glow);
+        }
+        .btn-enviar:hover { transform: translateY(-1px); box-shadow: 0 6px 22px var(--orange-glow); }
+        .btn-enviar:active { transform: scale(0.97); }
+
+        .btn-pasar {
+            flex: 1;
+            padding: 14px;
+            border-radius: 50px;
+            border: 1.5px solid rgba(255,23,68,0.5);
+            background: transparent;
+            color: #ff6b6b;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: border-color 0.15s, background 0.15s;
+        }
+        .btn-pasar:hover { border-color: var(--red); background: rgba(255,23,68,0.08); }
+        .btn-pasar:active { transform: scale(0.97); }
+
+        /* Feedback flash */
+        .feedback-msg {
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+            height: 20px;
+            transition: color 0.2s;
+        }
+        .feedback-msg.ok { color: var(--green); }
+        .feedback-msg.ko { color: var(--red); }
+        .feedback-msg.pass { color: var(--pending); }
+
+        /* Mic button */
+        .btn-mic {
+            padding: 14px 20px;
+            border-radius: 50px;
+            border: 1.5px solid var(--border);
+            background: rgba(255,255,255,0.04);
+            color: var(--muted);
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: border-color 0.2s, color 0.2s;
+        }
+        .btn-mic.listening { border-color: var(--red); color: var(--red); animation: pulse 0.6s ease infinite; }
+        .btn-mic:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+
+        /* ─── PANTALLA FIN ─── */
+        #screen-end { gap: 28px; }
+
+        .end-title {
+            text-align: center;
+            font-size: clamp(2rem, 8vw, 3.5rem);
+            font-weight: 900;
+        }
+        .end-title .win { color: var(--green); }
+        .end-title .lose { color: var(--orange); }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            width: 100%;
+            max-width: 420px;
+        }
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 18px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 900;
+        }
+        .stat-value.green { color: var(--green); }
+        .stat-value.red { color: var(--red); }
+        .stat-value.yellow { color: var(--pending); }
+        .stat-value.blue { color: var(--blue); }
+        .stat-label { font-size: 0.8rem; color: var(--muted); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+
+        .progress-bar-track {
+            width: 100%;
+            max-width: 420px;
+            height: 10px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 6px;
+            background: linear-gradient(90deg, var(--orange), var(--green));
+            transition: width 1s ease;
+        }
+
+        .end-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            max-width: 420px;
+        }
+
+        /* ─── UTILIDADES ─── */
+        .hidden { display: none !important; }
+        .text-center { text-align: center; }
+    </style>
+</head>
+<body>
+
+    <!-- ══════════════════════ PANTALLA INICIO ══════════════════════ -->
+    <div id="screen-menu" class="screen active">
+        <div class="logo">
+            <span class="logo-main">PASAPALABRA</span>
+            <span class="logo-sub">El Rosco</span>
+        </div>
+
+        <div class="card">
+            <div class="input-group">
+                <label class="input-label" for="input-name">Tu nombre</label>
+                <input type="text" id="input-name" placeholder="¿Cómo te llamas?" maxlength="20" autocomplete="off">
+            </div>
+            <div class="divider"></div>
+            <button class="btn btn-primary" id="btn-jugar" onclick="iniciarCarga()">▶ JUGAR</button>
+            <button class="btn btn-secondary" onclick="mostrarReglas()">📘 Cómo jugar</button>
+        </div>
+    </div>
+
+    <!-- ══════════════════════ PANTALLA CARGA ══════════════════════ -->
+    <div id="screen-loading" class="screen">
+        <div class="spinner"></div>
+        <div>
+            <div class="loading-text">Generando rosco para</div>
+            <div class="loading-name" id="loading-player-name">—</div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════ PANTALLA JUEGO ══════════════════════ -->
+    <div id="screen-game" class="screen">
+
+        <!-- Header -->
+        <div class="game-header">
+            <div class="player-name-badge">🎯 <span id="hdr-name"></span></div>
+
+            <div class="timer-block">
+                <div class="timer-display" id="timer-display">02:30</div>
+                <div class="timer-bar-track">
+                    <div class="timer-bar-fill" id="timer-bar"></div>
+                </div>
+            </div>
+
+            <div class="scoreboard">
+                <div class="score-item">
+                    <div class="score-dot green"></div>
+                    <span id="score-ok">0</span>
+                </div>
+                <div class="score-item">
+                    <div class="score-dot red"></div>
+                    <span id="score-ko">0</span>
+                </div>
+                <div class="score-item">
+                    <div class="score-dot yellow"></div>
+                    <span id="score-pend">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Juego principal -->
+        <div class="game-main">
+
+            <!-- Rosco -->
+            <div class="rosco-wrapper">
+                <svg id="rosco-svg" viewBox="0 0 420 420"></svg>
+                <div class="rosco-center">
+                    <div class="vuelta-label">Vuelta</div>
+                    <div class="vuelta-num" id="vuelta-display">1</div>
+                </div>
+            </div>
+
+            <!-- Pregunta + respuesta -->
+            <div class="question-panel">
+                <div class="question-card">
+                    <div class="question-tag" id="question-tag">CON LA A</div>
+                    <div class="question-text" id="question-text">Cargando...</div>
+                </div>
+
+                <div class="answer-row">
+                    <input type="text" id="game-input" placeholder="Tu respuesta..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                    <button class="btn-mic" id="btn-mic" onclick="activarVoz()" title="Usar micrófono">🎤</button>
+                </div>
+
+                <div class="feedback-msg" id="feedback-msg"></div>
+
+                <div class="answer-buttons">
+                    <button class="btn-enviar" onclick="enviarRespuesta()">ENVIAR ↵</button>
+                    <button class="btn-pasar" onclick="pasapalabra()">PASAR →</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════ PANTALLA FIN ══════════════════════ -->
+    <div id="screen-end" class="screen">
+        <div class="end-title" id="end-title"></div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value green" id="end-ok">0</div>
+                <div class="stat-label">✅ Aciertos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value red" id="end-ko">0</div>
+                <div class="stat-label">❌ Fallos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value yellow" id="end-pend">0</div>
+                <div class="stat-label">⏭ Pasadas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value blue" id="end-time">—</div>
+                <div class="stat-label">⏱ Tiempo</div>
+            </div>
+        </div>
+
+        <div>
+            <div style="text-align:center; margin-bottom:8px; font-size:0.82rem; color:var(--muted); font-weight:600;">PORCENTAJE DE ACIERTOS</div>
+            <div class="progress-bar-track">
+                <div class="progress-bar-fill" id="end-bar" style="width:0%"></div>
+            </div>
+        </div>
+
+        <div class="end-buttons">
+            <button class="btn btn-primary" onclick="reiniciarJuego()">↺ JUGAR OTRA VEZ</button>
+            <button class="btn btn-secondary" onclick="volverMenu()">← VOLVER AL MENÚ</button>
+        </div>
+    </div>
+
+<script>
+/* ════════════════════════════════════════════════
+   DATOS
+════════════════════════════════════════════════ */
+const LETRAS = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','Ñ','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
+const TIEMPO_TOTAL = 150; // segundos (2:30)
+
+let BANCO = [];             // Preguntas cargadas desde preguntas.json
+let rosco  = [];            // [{letra, pregunta, respuesta, tipo, estado}]  estado: 'sin','correcta','fallada','pendiente'
+let cola   = [];            // índices pendientes a resolver (con pasapalabra)
+let colaIdx = 0;            // posición actual en la cola
+let vuelta = 1;
+let timerSeg = TIEMPO_TOTAL;
+let timerInterval = null;
+let playerName = '';
+let aciertos = 0, fallos = 0, pendientes = 0;
+let gameOver = false;
+
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let reconocimiento = SpeechRecognition ? new SpeechRecognition() : null;
+if (reconocimiento) {
+    reconocimiento.lang = 'es-ES';
+    reconocimiento.continuous = false;
+    reconocimiento.interimResults = false;
+}
+
+/* ════════════════════════════════════════════════
+   NAVEGACIÓN DE PANTALLAS
+════════════════════════════════════════════════ */
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+}
+
+/* ════════════════════════════════════════════════
+   INICIO
+════════════════════════════════════════════════ */
+document.getElementById('input-name').addEventListener('keydown', e => {
+    if (e.key === 'Enter') iniciarCarga();
+});
+
+function mostrarReglas() {
+    alert('📖 CÓMO JUGAR\n\n' +
+        '• El rosco tiene 27 letras (A–Z + Ñ).\n' +
+        '• Para cada letra verás una definición.\n' +
+        '  "Con la X" → la respuesta EMPIEZA por esa letra.\n' +
+        '  "Contiene la X" → la respuesta INCLUYE esa letra.\n' +
+        '• ENVIAR (o pulsa Enter) para confirmar tu respuesta.\n' +
+        '• PASAR para dejar la pregunta para después. Puedes dar\n' +
+        '  todas las vueltas que quieras hasta resolverlas todas.\n' +
+        '• Tienes 2 minutos y 30 segundos.\n' +
+        '• ¡Acierta todas para ganar el rosco!');
+}
+
+async function iniciarCarga() {
+    playerName = document.getElementById('input-name').value.trim();
+    if (!playerName) { document.getElementById('input-name').focus(); return; }
+
+    document.getElementById('loading-player-name').textContent = playerName;
+    showScreen('screen-loading');
+
+    // Cargamos preguntas.json
+    try {
+        const res = await fetch('preguntas.json');
+        BANCO = await res.json();
+    } catch(e) {
+        BANCO = getFallback();
+    }
+
+    // Pequeña pausa dramática
+    await sleep(900);
+    iniciarJuego();
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+/* ════════════════════════════════════════════════
+   MONTAR EL ROSCO
+════════════════════════════════════════════════ */
+function montarRosco() {
+    rosco = [];
+    // Tomamos una pregunta por cada letra del abecedario (en orden)
+    LETRAS.forEach(letra => {
+        // Buscamos en el banco la pregunta para esta letra
+        const p = BANCO.find(b => b.letra === letra);
+        rosco.push({
+            letra,
+            pregunta: p ? p.pregunta : `Con la ${letra}. Pregunta no disponible.`,
+            respuesta: p ? p.respuesta : '',
+            tipo: p ? p.tipo : 'CON LA',
+            estado: 'sin'
+        });
+    });
+
+    // Cola inicial: todos los índices en orden
+    cola = rosco.map((_, i) => i);
+    colaIdx = 0;
+    vuelta = 1;
+}
+
+/* ════════════════════════════════════════════════
+   ROSCO SVG
+════════════════════════════════════════════════ */
+function renderizarRosco() {
+    const svg = document.getElementById('rosco-svg');
+    svg.innerHTML = '';
+    const cx = 210, cy = 210, r = 175;
+    const total = rosco.length;
+
+    rosco.forEach((item, i) => {
+        const angle = (i * (360 / total) - 90) * Math.PI / 180;
+        const x = cx + r * Math.cos(angle);
+        const y = cy + r * Math.sin(angle);
+
+        // Circulo de fondo
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', x);
+        circle.setAttribute('cy', y);
+        circle.setAttribute('r', 18);
+        circle.setAttribute('id', `circle-${i}`);
+        circle.setAttribute('fill', getCircleFill(item.estado, false));
+        circle.setAttribute('stroke', getCircleStroke(item.estado, false));
+        circle.setAttribute('stroke-width', '2');
+        circle.style.transition = 'fill 0.4s, stroke 0.4s';
+        svg.appendChild(circle);
+
+        // Letra
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', x);
+        text.setAttribute('y', y + 5);
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('font-family', 'Outfit, sans-serif');
+        text.setAttribute('font-size', '13');
+        text.setAttribute('font-weight', '700');
+        text.setAttribute('fill', '#fff');
+        text.setAttribute('id', `text-${i}`);
+        text.textContent = item.letra;
+        svg.appendChild(text);
+    });
+}
+
+function getCircleFill(estado, activa) {
+    if (activa) return '#ff7f00';
+    switch(estado) {
+        case 'correcta':  return '#00c264';
+        case 'fallada':   return '#c7001a';
+        case 'pendiente': return '#b38000';
+        default:          return 'rgba(255,255,255,0.06)';
+    }
+}
+function getCircleStroke(estado, activa) {
+    if (activa) return '#ff7f00';
+    switch(estado) {
+        case 'correcta':  return '#00e676';
+        case 'fallada':   return '#ff1744';
+        case 'pendiente': return '#ffd740';
+        default:          return 'rgba(255,255,255,0.15)';
+    }
+}
+
+function actualizarCirculo(idx, activa) {
+    const c = document.getElementById(`circle-${idx}`);
+    const t = document.getElementById(`text-${idx}`);
+    if (!c) return;
+    c.setAttribute('fill',   getCircleFill(rosco[idx].estado, activa));
+    c.setAttribute('stroke', getCircleStroke(rosco[idx].estado, activa));
+    c.setAttribute('r', activa ? '22' : '18');
+    if (t) t.setAttribute('font-size', activa ? '15' : '13');
+}
+
+/* ════════════════════════════════════════════════
+   JUEGO PRINCIPAL
+════════════════════════════════════════════════ */
+function iniciarJuego() {
+    aciertos = 0; fallos = 0; pendientes = 0; gameOver = false;
+    montarRosco();
+    document.getElementById('hdr-name').textContent = playerName;
+    renderizarRosco();
+    resetTimer();
+    showScreen('screen-game');
+    actualizarMarcador();
+    mostrarPreguntaActual();
+    arrancarTimer();
+
+    // Focus en input
+    setTimeout(() => document.getElementById('game-input').focus(), 100);
+
+    // Enter en input
+    const inp = document.getElementById('game-input');
+    inp.onkeydown = e => { if (e.key === 'Enter') enviarRespuesta(); };
+}
+
+function mostrarPreguntaActual() {
+    if (cola.length === 0 || colaIdx >= cola.length) {
+        finJuego('rosco'); return;
+    }
+    const idx = cola[colaIdx];
+    const item = rosco[idx];
+
+    document.getElementById('question-tag').textContent = item.tipo + ' LA ' + item.letra;
+    document.getElementById('question-text').textContent = item.pregunta;
+    document.getElementById('game-input').value = '';
+    document.getElementById('game-input').className = '';
+    document.getElementById('feedback-msg').textContent = '';
+    document.getElementById('feedback-msg').className = 'feedback-msg';
+    document.getElementById('vuelta-display').textContent = vuelta;
+
+    // Resaltar letra activa
+    rosco.forEach((_, i) => actualizarCirculo(i, false));
+    actualizarCirculo(idx, true);
+
+    document.getElementById('game-input').focus();
+}
+
+function normalizarTexto(t) {
+    return t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+}
+
+function enviarRespuesta() {
+    if (gameOver) return;
+    const input = document.getElementById('game-input');
+    const userAns = normalizarTexto(input.value);
+    if (!userAns) return;
+
+    const idx = cola[colaIdx];
+    const item = rosco[idx];
+    const correcta = normalizarTexto(item.respuesta);
+
+    if (userAns === correcta) {
+        item.estado = 'correcta';
+        aciertos++;
+        mostrarFeedback('✓ ¡Correcto!', 'ok');
+        input.classList.add('correct');
+    } else {
+        item.estado = 'fallada';
+        fallos++;
+        mostrarFeedback('✗ Era: ' + item.respuesta, 'ko');
+        input.classList.add('wrong');
+    }
+
+    actualizarCirculo(idx, false);
+    actualizarMarcador();
+
+    // Eliminar esta pregunta de la cola y avanzar
+    cola.splice(colaIdx, 1);
+    pendientes = cola.length;
+
+    // Si colaIdx apunta fuera, volver al inicio y subir vuelta
+    if (colaIdx >= cola.length) {
+        colaIdx = 0;
+        if (cola.length > 0) vuelta++;
+    }
+
+    actualizarMarcador();
+
+    if (cola.length === 0) {
+        setTimeout(() => finJuego('rosco'), 800);
+        return;
+    }
+    setTimeout(mostrarPreguntaActual, 900);
+}
+
+function pasapalabra() {
+    if (gameOver) return;
+    const idx = cola[colaIdx];
+    rosco[idx].estado = 'pendiente';
+    actualizarCirculo(idx, false);
+
+    mostrarFeedback('→ Pasapalabra...', 'pass');
+
+    colaIdx++;
+    if (colaIdx >= cola.length) {
+        colaIdx = 0;
+        vuelta++;
+    }
+
+    pendientes = cola.length;
+    actualizarMarcador();
+    setTimeout(mostrarPreguntaActual, 400);
+}
+
+function mostrarFeedback(msg, tipo) {
+    const el = document.getElementById('feedback-msg');
+    el.textContent = msg;
+    el.className = 'feedback-msg ' + tipo;
+}
+
+function actualizarMarcador() {
+    document.getElementById('score-ok').textContent = aciertos;
+    document.getElementById('score-ko').textContent = fallos;
+    document.getElementById('score-pend').textContent = cola.length;
+}
+
+/* ════════════════════════════════════════════════
+   TIMER
+════════════════════════════════════════════════ */
+function resetTimer() {
+    timerSeg = TIEMPO_TOTAL;
+    clearInterval(timerInterval);
+}
+
+function arrancarTimer() {
+    clearInterval(timerInterval);
+    actualizarVisualTimer();
+    timerInterval = setInterval(() => {
+        timerSeg--;
+        actualizarVisualTimer();
+        if (timerSeg <= 0) {
+            clearInterval(timerInterval);
+            finJuego('tiempo');
+        }
+    }, 1000);
+}
+
+function actualizarVisualTimer() {
+    const mins = String(Math.floor(timerSeg / 60)).padStart(2, '0');
+    const secs = String(timerSeg % 60).padStart(2, '0');
+    const display = document.getElementById('timer-display');
+    const bar = document.getElementById('timer-bar');
+
+    display.textContent = `${mins}:${secs}`;
+    const pct = (timerSeg / TIEMPO_TOTAL) * 100;
+    bar.style.width = pct + '%';
+
+    display.className = 'timer-display';
+    bar.className = 'timer-bar-fill';
+    if (timerSeg <= 30) {
+        display.classList.add('danger');
+        bar.classList.add('danger');
+    } else if (timerSeg <= 60) {
+        display.classList.add('warning');
+        bar.classList.add('warning');
+    }
+}
+
+/* ════════════════════════════════════════════════
+   FIN DEL JUEGO
+════════════════════════════════════════════════ */
+function finJuego(motivo) {
+    gameOver = true;
+    clearInterval(timerInterval);
+
+    // Calcular fallos finales: las pendientes se marcan como falladas
+    document.getElementById('rosco-svg').querySelectorAll('circle').forEach(c => c.setAttribute('r', '18'));
+
+    const totalPreguntas = rosco.length;
+    const pct = Math.round((aciertos / totalPreguntas) * 100);
+    const tiempoUsado = TIEMPO_TOTAL - timerSeg;
+    const mins = String(Math.floor(tiempoUsado / 60)).padStart(2, '0');
+    const secs = String(tiempoUsado % 60).padStart(2, '0');
+
+    const ganado = motivo === 'rosco'; // ganó si terminó todas
+
+    const titleEl = document.getElementById('end-title');
+    if (ganado) {
+        titleEl.innerHTML = '<span class="win">🏆 ¡GANASTE!</span>';
+    } else {
+        titleEl.innerHTML = '<span class="lose">Fin del tiempo</span>';
+    }
+
+    document.getElementById('end-ok').textContent = aciertos;
+    document.getElementById('end-ko').textContent = fallos;
+    document.getElementById('end-pend').textContent = cola.length;
+    document.getElementById('end-time').textContent = mins + ':' + secs;
+
+    showScreen('screen-end');
+
+    // Animar barra de porcentaje
+    setTimeout(() => {
+        document.getElementById('end-bar').style.width = pct + '%';
+    }, 100);
+}
+
+/* ════════════════════════════════════════════════
+   VOZ
+════════════════════════════════════════════════ */
+function activarVoz() {
+    if (!reconocimiento) { alert('Tu navegador no soporta reconocimiento de voz.'); return; }
+    const btn = document.getElementById('btn-mic');
+    btn.classList.add('listening');
+    reconocimiento.start();
+    reconocimiento.onresult = e => {
+        document.getElementById('game-input').value = e.results[0][0].transcript;
+        btn.classList.remove('listening');
+        document.getElementById('game-input').focus();
+    };
+    reconocimiento.onerror = () => btn.classList.remove('listening');
+    reconocimiento.onend  = () => btn.classList.remove('listening');
+}
+
+/* ════════════════════════════════════════════════
+   REPETIR / MENÚ
+════════════════════════════════════════════════ */
+function reiniciarJuego() { iniciarJuego(); }
+function volverMenu() { showScreen('screen-menu'); }
+
+/* ════════════════════════════════════════════════
+   FALLBACK (si falla el fetch)
+════════════════════════════════════════════════ */
+function getFallback() {
+    return [
+        {letra:'A', pregunta:'Con la A. Capital de España.', respuesta:'madrid', tipo:'CON LA'},
+        {letra:'B', pregunta:'Con la B. Mamífero marino de gran tamaño.', respuesta:'ballena', tipo:'CON LA'},
+        {letra:'C', pregunta:'Con la C. Edificio donde vive una familia.', respuesta:'casa', tipo:'CON LA'},
+        {letra:'D', pregunta:'Con la D. Pieza cúbica con puntos para jugar.', respuesta:'dado', tipo:'CON LA'},
+        {letra:'E', pregunta:'Con la E. Animal con trompa y orejas grandes.', respuesta:'elefante', tipo:'CON LA'},
+        {letra:'F', pregunta:'Con la F. País cuya capital es París.', respuesta:'francia', tipo:'CON LA'},
+        {letra:'G', pregunta:'Con la G. Deporte que se juega en campos con hoyos.', respuesta:'golf', tipo:'CON LA'},
+        {letra:'H', pregunta:'Con la H. Elemento químico más ligero.', respuesta:'hidrogeno', tipo:'CON LA'},
+        {letra:'I', pregunta:'Con la I. Tierra rodeada de agua por todas partes.', respuesta:'isla', tipo:'CON LA'},
+        {letra:'J', pregunta:'Con la J. Deporte de lucha de origen japonés.', respuesta:'judo', tipo:'CON LA'},
+        {letra:'K', pregunta:'Con la K. Unidad de masa equivalente a 1000 gramos.', respuesta:'kilogramo', tipo:'CON LA'},
+        {letra:'L', pregunta:'Con la L. Satélite natural de la Tierra.', respuesta:'luna', tipo:'CON LA'},
+        {letra:'M', pregunta:'Con la M. Fruto del manzano.', respuesta:'manzana', tipo:'CON LA'},
+        {letra:'N', pregunta:'Con la N. País europeo cuya capital es Oslo.', respuesta:'noruega', tipo:'CON LA'},
+        {letra:'Ñ', pregunta:'Con la Ñ. Ave corredora de América del Sur.', respuesta:'ñandú', tipo:'CON LA'},
+        {letra:'O', pregunta:'Con la O. Instrumento musical de viento con doble lengüeta.', respuesta:'oboe', tipo:'CON LA'},
+        {letra:'P', pregunta:'Con la P. Pintor malacitano padre del cubismo.', respuesta:'picasso', tipo:'CON LA'},
+        {letra:'Q', pregunta:'Con la Q. Ciencia que estudia la composición de la materia.', respuesta:'quimica', tipo:'CON LA'},
+        {letra:'R', pregunta:'Con la R. Órgano que filtra la sangre.', respuesta:'riñon', tipo:'CON LA'},
+        {letra:'S', pregunta:'Con la S. Estrella que da luz y calor a la Tierra.', respuesta:'sol', tipo:'CON LA'},
+        {letra:'T', pregunta:'Con la T. Gran ola marina causada por un sismo.', respuesta:'tsunami', tipo:'CON LA'},
+        {letra:'U', pregunta:'Con la U. Séptimo planeta del sistema solar.', respuesta:'urano', tipo:'CON LA'},
+        {letra:'V', pregunta:'Con la V. Instrumento de cuerda frotada más agudo.', respuesta:'violin', tipo:'CON LA'},
+        {letra:'W', pregunta:'Contiene la W. Deporte de combate en ring. En inglés.', respuesta:'boxing', tipo:'CONTIENE LA'},
+        {letra:'X', pregunta:'Contiene la X. Prueba escrita para evaluar conocimientos.', respuesta:'examen', tipo:'CONTIENE LA'},
+        {letra:'Y', pregunta:'Con la Y. Disciplina de origen indio que combina posturas y meditación.', respuesta:'yoga', tipo:'CON LA'},
+        {letra:'Z', pregunta:'Con la Z. Calzado con suela que cubre el pie.', respuesta:'zapato', tipo:'CON LA'},
+    ];
+}
+</script>
+</body>
+</html>

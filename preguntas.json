@@ -1,0 +1,182 @@
+[
+  {
+    "letra": "A",
+    "pregunta": "Con la A. Capital de España, ciudad a orillas del río Manzanares.",
+    "respuesta": "madrid",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "B",
+    "pregunta": "Con la B. Deporte acuático en el que se nada bajo el agua con una bombona de oxígeno.",
+    "respuesta": "buceo",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "C",
+    "pregunta": "Con la C. Instrumento de viento formado por un tubo enrollado con bocina, muy usado en orquesta.",
+    "respuesta": "corno",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "D",
+    "pregunta": "Con la D. Ciencia que estudia los dientes y la salud bucal.",
+    "respuesta": "dentistería",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "E",
+    "pregunta": "Con la E. Poeta español del Siglo de Oro, autor de La vida es sueño.",
+    "respuesta": "esquilache",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "E",
+    "pregunta": "Con la E. Fenómeno atmosférico que consiste en una descarga eléctrica entre nubes o entre una nube y la tierra.",
+    "respuesta": "exhalacion",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "F",
+    "pregunta": "Con la F. País de Europa occidental, cuya capital es París.",
+    "respuesta": "francia",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "G",
+    "pregunta": "Con la G. Juego deportivo de origen escocés que se practica en un campo con hoyos usando palos.",
+    "respuesta": "golf",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "H",
+    "pregunta": "Con la H. Elemento químico de número atómico 1, el más ligero del universo.",
+    "respuesta": "hidrogeno",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "I",
+    "pregunta": "Con la I. Ciencia que estudia los insectos.",
+    "respuesta": "entomologia",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "I",
+    "pregunta": "Con la I. Instrumento náutico que permite determinar la posición de un barco observando los astros.",
+    "respuesta": "inclinometro",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "J",
+    "pregunta": "Con la J. Deporte de lucha de origen japonés en el que se compite sobre un tatami.",
+    "respuesta": "judo",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "K",
+    "pregunta": "Con la K. Unidad de masa del Sistema Internacional equivalente a 1000 gramos.",
+    "respuesta": "kilogramo",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "L",
+    "pregunta": "Con la L. Instrumento óptico que permite ver objetos lejanos.",
+    "respuesta": "lente",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "M",
+    "pregunta": "Con la M. Pintor español del Renacimiento, conocido por el cuadro El Jardín de las Delicias.",
+    "respuesta": "memling",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "M",
+    "pregunta": "Con la M. Conjunto de reglas que rigen el funcionamiento de una máquina o aparato.",
+    "respuesta": "mecanismo",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "N",
+    "pregunta": "Con la N. País de Europa del Norte cuya capital es Oslo.",
+    "respuesta": "noruega",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "Ñ",
+    "pregunta": "Con la Ñ. Ave corredora de América del Sur, similar al avestruz.",
+    "respuesta": "ñandú",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "O",
+    "pregunta": "Con la O. Instrumento musical de viento en forma de cilindro con doble lengüeta.",
+    "respuesta": "oboe",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "P",
+    "pregunta": "Con la P. Pintor español considerado padre del cubismo, nacido en Málaga en 1881.",
+    "respuesta": "picasso",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "Q",
+    "pregunta": "Con la Q. Ciencia que estudia la composición, estructura y propiedades de la materia.",
+    "respuesta": "quimica",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "R",
+    "pregunta": "Con la R. Órgano del cuerpo humano encargado de filtrar la sangre y producir orina.",
+    "respuesta": "riñon",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "S",
+    "pregunta": "Con la S. Juego de cartas más popular en España, de origen árabe, que se juega con baraja española.",
+    "respuesta": "subasta",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "T",
+    "pregunta": "Con la T. Fenómeno sísmico que genera grandes olas en el mar.",
+    "respuesta": "tsunami",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "U",
+    "pregunta": "Con la U. Planeta del sistema solar de color azulado, el séptimo en distancia al Sol.",
+    "respuesta": "urano",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "V",
+    "pregunta": "Con la V. Instrumento de cuerda frotada, el más agudo de la familia del violín.",
+    "respuesta": "violin",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "W",
+    "pregunta": "Contiene la W. Deporte de combate en el que dos boxeadores luchan en un cuadrilátero. En inglés.",
+    "respuesta": "boxing",
+    "tipo": "CONTIENE LA"
+  },
+  {
+    "letra": "X",
+    "pregunta": "Contiene la X. Prueba escrita que se realiza en colegios e institutos para evaluar los conocimientos del alumno.",
+    "respuesta": "examen",
+    "tipo": "CONTIENE LA"
+  },
+  {
+    "letra": "Y",
+    "pregunta": "Con la Y. Disciplina mental y corporal originaria de la India que combina posturas, respiración y meditación.",
+    "respuesta": "yoga",
+    "tipo": "CON LA"
+  },
+  {
+    "letra": "Z",
+    "pregunta": "Con la Z. Fruta tropical de piel rugosa, de sabor muy dulce, originaria de América Central.",
+    "respuesta": "zapote",
+    "tipo": "CON LA"
+  }
+]
